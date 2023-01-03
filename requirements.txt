@@ -6,3 +6,9 @@ plotly
 seaborn
 koreanize_matplotlib
 plotly
+tqdm
+matplotlib
+kiwipiepy 
+keybert
+bs4
+requests
