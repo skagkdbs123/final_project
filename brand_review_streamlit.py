@@ -78,7 +78,7 @@ def labeling(data):
 
 try :
     label_data = labeling(data=data)
-    positive = label_data[(df["평점"] == "100%")]
+    positive = label_data[(label_data["평점"] == "100%")]
     data_load_state.text(f'{select_brand[0]} 데이터 로드 success ‼')
     st.write(positive)
 except KeyError as k:
