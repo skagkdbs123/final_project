@@ -81,8 +81,8 @@ try :
     positive = label_data[(label_data["평점"] == "100%")]
     negative = label_data[(label_data["평점"] == "20%") | (df["평점"] == "40%")]
     data_load_state.text(f'{select_brand[0]} 데이터 로드 success ‼')
-    st.write(positive)
-    st.write(negative)
+    st.write(positive,negative)
+
 except KeyError as k:
     pass
 except NameError as n:
