@@ -16,7 +16,8 @@ st.set_page_config(
 
 st.markdown("# 👕 브랜드를 선택해주세요. 👖")
 
-st.sidebar.markdown("# 브랜드 선택 ❓")
+st.sidebar.selectbox("# 브랜드 선택 ❓")
+
 
 # select brand
 brand_list = ['브랜드 선택', '라퍼지스토어', '꼼파뇨', 'Draw fit',
