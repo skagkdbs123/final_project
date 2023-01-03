@@ -79,8 +79,7 @@ def labeling(data):
 try :
     label_data = labeling(data=data)
     data_load_state.text(f'{select_brand[0]} 데이터 로드 success ‼')
-    st.write(label_data[(df["평점"] == "100%")])
-    st.write(label_data[(df["평점"] == "20%") | (df["평점"] == "40%")])
+    st.write(label_data)
 except KeyError as k:
     pass
 except NameError as n:
