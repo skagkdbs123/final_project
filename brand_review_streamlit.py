@@ -16,7 +16,7 @@ st.set_page_config(
 
 st.markdown("# 👕 브랜드를 선택해주세요. 👖")
 
-st.sidebar.selectbox("# 브랜드 선택 ❓")
+st.sidebar.selectbox("페이지",("1p.브랜드 선택","2p.브랜드선택"))
 
 
 # select brand
