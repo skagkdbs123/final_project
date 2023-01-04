@@ -182,24 +182,15 @@ def graph(brand):
 
     # import matplotlib.pyplot as plt
 
-    st.pyplot(word긍정, list긍정,
-            marker='o', markerfacecolor='blue',
-            markersize=6, title='긍정 키워드 비교')
+    st.line_chart(word긍정, list긍정, title='긍정 키워드 비교')
 
-    st.pyplot(word긍정, listbrand긍정,
-            color='skyblue',
-            marker='o', markerfacecolor='red',
-            markersize=6)
+    st.line_chart(word긍정, listbrand긍정, title = '긍정 키워드 비교')
+
     st.imshow()
 
-    st.pyplot(word부정, list부정,
-         marker='o', markerfacecolor='blue',
-         markersize=6, title='부정 키워드 비교')
+    st.line_chart(word부정, list부정, title='부정 키워드 비교')
 
-    st.pyplot(word부정, listbrand부정,
-            color='skyblue',
-            marker='o', markerfacecolor='red',
-            markersize=6)
+    st.line_chart(word부정, listbrand부정, title='부정 키워드 비교')
 
     st.imshow()
   
