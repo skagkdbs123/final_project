@@ -20,7 +20,7 @@ from kiwipiepy import Kiwi
 import requests
 from PIL import Image
 from bs4 import BeautifulSoup
-#import cv2
+import cv2
 
 st.set_page_config(
     page_title="brand review analysis",
@@ -30,7 +30,7 @@ st.set_page_config(
 
 st.markdown("# 👕 브랜드를 선택해주세요. 👖")
 
-st.sidebar.markdown("# 브랜드 선택 ❓")
+st.sidebar.markdown("# 📌 브랜드 종류")
 st.sidebar.markdown("""
 라퍼지스토어 lafudgestore            
 꼼파뇨 compagno         
@@ -90,10 +90,128 @@ def data_load(select_brand):
     data = pd.read_csv(data_link) 
     return data
 
+def graph(brand):
+    삭제 = brand[(brand["평점"]=="60%") | (brand["평점"]=="80%")].index
+    brand = brand.drop(삭제)
+    brand.loc[(brand["평점"] == "100%"), "label"] = 1
+    brand.loc[(brand["평점"] == "20%") | (brand["평점"] == "40%"), "label"] = 0
+    brand = brand.drop_duplicates()
+    brand = brand.reset_index(drop=True)
+    brand["평점"].value_counts()
+
+    dfbrand긍정 = brand[brand["label"]==1]
+    dfbrand긍정 = dfbrand긍정.reset_index(drop=True)
+    dfbrand부정 = brand[brand["label"]==0]
+    dfbrand부정 = dfbrand부정.reset_index(drop=True)
+
+    dfbrand사이즈 = dfbrand긍정[dfbrand긍정['리뷰'].str.contains('사이즈')]
+    branda = dfbrand사이즈.shape[0] / dfbrand긍정.shape[0]
+
+    dfbrand색감 = dfbrand긍정[dfbrand긍정['리뷰'].str.contains('색감')]
+    brandb = dfbrand색감.shape[0] / dfbrand긍정.shape[0]
+
+    dfbrand재질 = dfbrand긍정[dfbrand긍정['리뷰'].str.contains('재질')]
+    brandc = dfbrand재질.shape[0] / dfbrand긍정.shape[0]
+
+    dfbrand느낌 = dfbrand긍정[dfbrand긍정['리뷰'].str.contains('느낌')]
+    brandd = dfbrand느낌.shape[0] / dfbrand긍정.shape[0]
+
+    dfbrand디자인 = dfbrand긍정[dfbrand긍정['리뷰'].str.contains('디자인')]
+    brande = dfbrand디자인.shape[0] / dfbrand긍정.shape[0]
+
+    dfbrand핏 = dfbrand긍정[dfbrand긍정['리뷰'].str.contains('오버|버핏')]
+    brandf = dfbrand핏.shape[0] / dfbrand긍정.shape[0]
+
+    dfbrand두께 = dfbrand긍정[dfbrand긍정['리뷰'].str.contains('두께')]
+    brandg = dfbrand두께.shape[0] / dfbrand긍정.shape[0]
+
+    dfbrand색상 = dfbrand긍정[dfbrand긍정['리뷰'].str.contains('색상')]
+    brandh = dfbrand색상.shape[0] / dfbrand긍정.shape[0]
+
+    dfbrand가격 = dfbrand긍정[dfbrand긍정['리뷰'].str.contains('가격')]
+    brandi = dfbrand가격.shape[0] / dfbrand긍정.shape[0]
+
+    dfbrand기장 = dfbrand긍정[dfbrand긍정['리뷰'].str.contains('기장|길이')]
+    brandj = dfbrand기장.shape[0] / dfbrand긍정.shape[0]
+
+    dfbrand로고 = dfbrand긍정[dfbrand긍정['리뷰'].str.contains('로고')]
+    brandk = dfbrand로고.shape[0] / dfbrand긍정.shape[0]
+
+
+    dfbrand배송 = dfbrand부정[dfbrand부정['리뷰'].str.contains('배송')]
+    brandl = dfbrand배송.shape[0] / dfbrand부정.shape[0]
+
+    dfbrand사이즈 = dfbrand부정[dfbrand부정['리뷰'].str.contains('사이즈')]
+    brandm = dfbrand사이즈.shape[0] / dfbrand부정.shape[0]
+
+    dfbrand세탁 = dfbrand부정[dfbrand부정['리뷰'].str.contains('세탁')]
+    brandn = dfbrand세탁.shape[0] / dfbrand부정.shape[0]
+
+    dfbrand품질 = dfbrand부정[dfbrand부정['리뷰'].str.contains('품질')]
+    brando = dfbrand품질.shape[0] / dfbrand부정.shape[0]
+
+    dfbrand교환 = dfbrand부정[dfbrand부정['리뷰'].str.contains('교환')]
+    brandp = dfbrand교환.shape[0] / dfbrand부정.shape[0]
+
+    dfbrand재질 = dfbrand부정[dfbrand부정['리뷰'].str.contains('재질')]
+    brandq = dfbrand재질.shape[0] / dfbrand부정.shape[0]
+
+    dfbrand가격 = dfbrand부정[dfbrand부정['리뷰'].str.contains('가격')]
+    brandr = dfbrand가격.shape[0] / dfbrand부정.shape[0]
+
+    dfbrand느낌 = dfbrand부정[dfbrand부정['리뷰'].str.contains('느낌')]
+    brands = dfbrand느낌.shape[0] / dfbrand부정.shape[0]
+
+    dfbrand냄새 = dfbrand부정[dfbrand부정['리뷰'].str.contains('냄새')]
+    brandt = dfbrand냄새.shape[0] / dfbrand부정.shape[0]
+
+    dfbrand보풀 = dfbrand부정[dfbrand부정['리뷰'].str.contains('보풀')]
+    brandu = dfbrand보풀.shape[0] / dfbrand부정.shape[0]
+
+    dfbrand마감 = dfbrand부정[dfbrand부정['리뷰'].str.contains('마감')]
+    brandv = dfbrand마감.shape[0] / dfbrand부정.shape[0]
+
+    listbrand긍정= [branda, brandb, brandc, brandd, brande, brandf, brandg, brandh, brandi, brandj, brandk]
+    listbrand부정= [brandl, brandm, brandn, brando, brandp, brandq, brandr, brands, brandt, brandu, brandv]
+
+    Series3 = pd.Series(listbrand긍정)
+    Series4 = pd.Series(listbrand부정)
+
+    dfbrand긍정비율 = pd.DataFrame({"키워드": Series1, "비율": Series3})
+
+    dfbrand부정비율 = pd.DataFrame({"키워드": Series2, "비율": Series4})
+
+    # import matplotlib.pyplot as plt
+
+    plt.plot(word긍정, list긍정,
+            marker='o', markerfacecolor='blue',
+            markersize=6)
+
+    plt.plot(word긍정, listbrand긍정,
+            color='skyblue',
+            marker='o', markerfacecolor='red',
+            markersize=6)
+    plt.title("긍정 키워드 비교")
+    plt.show()
+
+    plt.plot(word부정, list부정,
+         marker='o', markerfacecolor='blue',
+         markersize=6)
+
+    plt.plot(word부정, listbrand부정,
+            color='skyblue',
+            marker='o', markerfacecolor='red',
+            markersize=6)
+
+    plt.title("부정 키워드 비교")
+    plt.show()
   
 try : 
     data_load_state = st.text('Loading data...') 
     data = data_load(select_brand[0])
+    graph(data)
+    pos_data = data[data["평점"] == "100%"]
+    neg_data = data[(data["평점"] == "20%") | (data["평점"] == "40%")]
 except KeyError as k:
     pass
 except IndexError as i:
@@ -127,8 +245,6 @@ try :
     negative = label_data[(label_data["평점"] == "20%") | (label_data["평점"] == "40%")].sample(10)
     positive['리뷰'] = positive['리뷰'].map(preprocessing)
     negative['리뷰'] = negative['리뷰'].map(preprocessing)
-    data_load_state.text(f'{select_brand[0]} 데이터 로드 success ‼')
-    st.write(positive['리뷰'])
 except KeyError as k:
     pass
 except NameError as n:
@@ -158,9 +274,6 @@ try :
         neg_text = ' '.join(neg_nouns)
         neg_noun_list.append(neg_text)
 
-    st.text(pos_noun_list)
-    st.text(neg_noun_list)
-
 except KeyError as k:
     pass
 except NameError as n:
@@ -189,8 +302,6 @@ def word_rank(corpus):
 try :
     pos_keyword = word_rank(pos_noun_list)
     neg_keyword = word_rank(neg_noun_list)
-    st.text(pos_keyword)
-    st.text(neg_keyword)
 except KeyError as k:
     pass
 except NameError as n:
@@ -220,60 +331,70 @@ img_brand_link = {
 def img_data_load(select_brand):
     for brand in select_brand:
         img_data_link = f'https://drive.google.com/uc?id='+img_brand_link[brand]
-        img_data = pd.read_csv(img_data_link) 
-    return img_data    
+        img_csv = pd.read_csv(img_data_link) 
+    return img_csv  
 
 
-def keyword_review(link_csv, df, keywords):
+def keyword_review(img_link, df, keywords):
     # 각 키워드 for문으로 돌리기
     for key_count in range(len(keywords)):
-        print(keyword[key_count])
         # 키워드의 단어를 포함하는 리뷰를 keyword_review_data로 할당
-    #     keyword_review_data = df[df['리뷰'].str.contains(keywords[key_count])]
+        keyword_review_data = df[df['리뷰'].str.contains(keywords[key_count])]
 
-    #     # 그 할당한 변수에서 상품 번호를 가져오고, 가장 많이 차지하는 top3의 상품 번호를 가져오기
-    #     product_num = keyword_review_data['상품_num']
-    #     top3_cumc_product = product_num.value_counts().sort_values(ascending=False)[:3].index
+        # 그 할당한 변수에서 상품 번호를 가져오고, 가장 많이 차지하는 top3의 상품 번호를 가져오기
+        product_num = keyword_review_data['상품_num']
+        top3_cumc_product = product_num.value_counts().sort_values(ascending=False)[:3].index
 
-    #     # top3의 상품 번호에 해당하는 리뷰 각각 3개의 리뷰 가져오기
-    #     review1 = keyword_review_data[keyword_review_data['상품_num']==top3_cumc_product[0]]['리뷰'].sample(3)
-    #     review2 = keyword_review_data[keyword_review_data['상품_num']==top3_cumc_product[1]]['리뷰'].sample(3)
-    #     review3 = keyword_review_data[keyword_review_data['상품_num']==top3_cumc_product[2]]['리뷰'].sample(3)
+        # top3의 상품 번호에 해당하는 리뷰 각각 3개의 리뷰 가져오기
+        review1 = keyword_review_data[keyword_review_data['상품_num']==top3_cumc_product[0]]['리뷰'].sample(3)
+        review2 = keyword_review_data[keyword_review_data['상품_num']==top3_cumc_product[1]]['리뷰'].sample(3)
+        review3 = keyword_review_data[keyword_review_data['상품_num']==top3_cumc_product[2]]['리뷰'].sample(3)
 
+        st.button(keywords[key_count])
+        
+        for i, number in enumerate(top3_cumc_product):
+            # 상품명
+            product_name_list = keyword_review_data[keyword_review_data['상품_num'] == top3_cumc_product[i]]['상품']
+            product_name = list(set(product_name_list))
+            st.text(f'상품 옵션 : {product_name}')
 
-    # if st.button(keywords[key_count]):
-    #     con = st.container()
-    #     return con.write(review1)
+            # 이미지 링크
+            #imgs_link = img_link[img_link['상품_num'] == number]['사진'].values
+            #join_link = ''.join(imgs_link)
+            #link = f'https:{join_link}'
+            #st.text(f'이미지 링크 : {link}')
+            
+            #image = Image.open(f'{img_link}')
+            #st.image(image)
 
+            if i==0:
+                st.text(review1.values)
+            if i==1:
+                st.text(review2.values)
+            if i==2:
+                st.text(review3.values)
 
-    #for key_count in range(len(keywords)):
-            # img_link = []
-            # for num in product_num:
-            #     link = link_csv[link_csv['상품']==num]
-            #     img_link.append(link['사진'])
-
-            # # Load the image from the URL
-            # for i in range(len(img_link)):
-            #     URL = f'https:{img_link}'
-            #     response = requests.get(URL)
-            #     image = Image.open(BytesIO(response.content))
-
-            #     st.image(image, caption='Image from URL')
-            #     st.text(f'review{i}')
+#            link = img_link[img_link['상품_num'] == num]['사진'].values
+#            join_link = ''.join(link)
+#            URL = f'https:{join_link}'
+#            response = requests.get(URL)
+#            image = Image.open(BytesIO(response.content))
+#            st.image(image, caption='Image from URL')
         
 
 try :
-    img_link = img_data_load(select_brand)
-    st.table(positive)
-    pos = keyword_review(img_link, positive, pos_keyword)
+    link_csv = img_data_load(select_brand)
+    st.markdown("""## 🙂 긍정 리뷰 핵심 키워드""")
+    pos = keyword_review(link_csv, pos_data, pos_keyword)
     st.text(pos)
-    neg = keyword_review(img_link, negative, neg_keyword)
+    st.markdown("""## 🙁 부정 리뷰 핵심 키워드""")
+    neg = keyword_review(link_csv, neg_data, neg_keyword)
     st.text(neg)
-    st.markdown("""### '긍정 리뷰 키워드'""")
-    st.write(pos_keyword)
-    st.markdown("""### '부정 리뷰 키워드'""")
-    st.write(neg_keyword)
 except KeyError as k:
+    pass
+except IndexError as i:
     pass
 except NameError as n:
     pass
+
+
