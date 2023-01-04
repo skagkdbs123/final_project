@@ -215,7 +215,8 @@ except KeyError as k:
     pass
 except IndexError as i:
     pass
-
+except NameError as n:
+    pass
 # labeling
 def labeling(data):
     df = data[["리뷰", "평점"]]
