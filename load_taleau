@@ -1,0 +1,27 @@
+import streamlit as st
+
+# Replace YOUR_EMBED_URL with the URL of your Tableau dashboard
+embed_url = "https://public.tableau.com/views/11_18_16687622026550/sheet14?:language=ko-KR&:display_count=n&:origin=viz_share_link"
+
+# Load the Tableau JavaScript API
+st.text("Loading Tableau dashboard...")
+st.write(
+    """
+    <div class='tableauPlaceholder' id='viz' style='width: 100%; height: 500px;'></div>
+    <script src='https://public.tableau.com/javascripts/api/v3/api.js'></script>
+    <script>
+    function initViz() {
+        var containerDiv = document.getElementById("viz"),
+            url = "YOUR_EMBED_URL",
+            options = {
+                hideTabs: true
+            };
+
+        var viz = new tableau.Viz(containerDiv, url, options);
+    }
+    </script>
+    <script type='text/javascript'>
+    window.onload = initViz;
+    </script>
+    """
+)
