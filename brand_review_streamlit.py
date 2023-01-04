@@ -13,13 +13,14 @@ import plotly.express as px
 import koreanize_matplotlib
 #%config InlineBackend.figure_format = 'retina'
 
-from keybert import KeyBERT
+from krwordrank.hangle import normalize
+from krwordrank.word import KRWordRank
 from kiwipiepy import Kiwi
 
 import requests
+from PIL import Image
 from bs4 import BeautifulSoup
-import urllib.request
-import cv2
+#import cv2
 
 st.set_page_config(
     page_title="brand review analysis",
@@ -73,7 +74,7 @@ def data_load(select_brand):
 
   
 try : 
-    data_load_state = st.spinner('Loading data...') 
+    data_load_state = st.text('Loading data...') 
     data = data_load(select_brand[0])
 except KeyError as k:
     pass
@@ -108,7 +109,7 @@ try :
     negative = label_data[(label_data["평점"] == "20%") | (label_data["평점"] == "40%")]
     positive['리뷰'] = positive['리뷰'].map(preprocessing)
     negative['리뷰'] = negative['리뷰'].map(preprocessing)
-    data_load_state.spinner(f'{select_brand[0]} 데이터 로드 success ‼')
+    data_load_state.text(f'{select_brand[0]} 데이터 로드 success ‼')
 except KeyError as k:
     pass
 except NameError as n:
@@ -124,40 +125,106 @@ def kiwi(sentence):
     return results
 
 try :
-    for pos in positive['리뷰']:
-        pos_noun = kiwi(sentence=pos)
-    for neg in negative['리뷰']:
-        neg_noun = kiwi(sentence=neg)
+    pos_noun_list = []
+    neg_noun_list = []
+    for pos in positive['리뷰'].tolist():
+        pos_nouns = kiwi(pos)
+        pos_text = ' '.join(pos_nouns)
+        pos_noun_list.append(pos_text)
+
+    for neg in negative['리뷰'].tolist():
+        neg_nouns = kiwi(neg)
+        neg_text = ' '.join(neg_nouns)
+        neg_noun_list.append(neg_text)
+
 except KeyError as k:
     pass
 except NameError as n:
     pass
 
-# wordrank 적용
-def keybert(df):
-    array_text = pd.DataFrame(df["리뷰"]).to_numpy()
-
-    keywords = []
-    kw_extractor = KeyBERT('skt/kobert-base-v1')
-    for j in range(len(array_text)):
-        keyword = kw_extractor.extract_keywords(array_text[j][0])
-        keywords.append(keyword)
+# wordrank 적용 top10 키워드 뽑기
+def word_rank(corpus):
+    beta = 0.90    # PageRank의 decaying factor beta
+    max_iter = 5
+    top_keywords = []
+    fnames = [corpus]
+    top_10=[]
     
-    important = []
-    for i in range(0, len(bow)):
-        for j in range(len(bow[i])):
-            important.append(bow[i][j])
-            
-    cum_count = pd.DataFrame([keywords, important], columns=['keyword', 'important'])
+    for fname in fnames:
+        texts = fname
+        wordrank_extractor = KRWordRank(min_count=5, max_length=10, verbose=False)
+        keywords, rank, graph = wordrank_extractor.extract(texts, beta, max_iter)
+        top_keywords.append(sorted(keywords.items(),key=lambda x:x[1],reverse=True)[:100])
+        
+    for i in range(10):
+        if i<10:
+            top_10.append(top_keywords[0][i][0])
+            i += 1
+    return top_10
 
-    keyword.groupby('keyword').agg('sum').sort_values('weight', ascending=False).head(200)
-    #가중치 순서로 20개 시각화
+# img data load
+img_brand_link = {
+    '라퍼지스토어_img' : '1QfwKjzDAfoowpe4LiH9yxhChdZo3iizh',
+    '드로우핏_img' : '1-caqKnBlM4Q26tec_4aWFm9017F9-_E4',
+    '커버낫_img' : '1f50QDJI6K7KeZ7WGSANV1sH6aiXa2c5T',
+    '파르티멘토_img' : '1Nt0LAAWlvVTh60Y9Zvbb3jmw0Jdl-URg',
+    '필루미네이트_img' : '1CtYGt4E5hzqp-tvwix5WhANpvzds8TQK',
+    '꼼파뇨_img' : '1-CJcWAp3WxKymk7PUxj9NYgM-3zfjM83',
+    '인사일런스_img' : '1COUpes3WPXeGn6mdYrtzG1D9dMJ43SF7' ,
+    '와릿이즌_img' : '1nxOa5_69KQrmbMduDhQtAPFgiclIFXO_' ,
+    '수아레_img' : '1G5QtrNYtKNhFgRVx0Fj2-b0F626o7ccX',
+    '내셔널지오그래픽_img' : '1Wm2ox9koFbYXkMtvLApCfQjDnPfSRsGF',
+    '예일_img' : '1MxqLCSCptl5O5shldxK513mh4G7z3j3V',    
+    '디즈이스네버댓_img' : '17yuM4U3W3aKKMCQphvBePiHC5mVugVkf',    
+    '아웃스탠딩_img' : '17v-GwoTF0mgOkRta3hAhytWLPOh2YUpk',
+    '리_img' : '1us6tb40vHoz4hrNGfoD9n2BL0fciY97n',
+    '어반드레스_img' : '1LDAyqzM-TZZCLVrZJK08WLJe2IF6Jtxt' 
+}
 
-# 호연 여기    
+def img_data_load(select_brand):
+    img_data_link = 'https://drive.google.com/uc?id='+img_brand_link[select_brand]
+    img_data = pd.read_csv(img_data_link) 
+    return img_data    
 
-def keyword_review(select_brand, data, keywords):
+
+def keyword_review(link_csv, data, keywords):
     img_csv = pd.read_csv('https://drive.google.com/uc?id='+brand_link[select_brand])
 
-    if st.button(keywords[0]):
-        product_review = data[data['리뷰'].str.contains(f'{keywords[0]}')]['리뷰']
-        product_num = data[data['리뷰'].str.contains(f'{keywords[0]}')]['상품_num']
+    for keyword_count in range(len(keywords)):
+        if st.button(keywords[keyword_count]):
+            keyword_review_data = data[data['리뷰'].str.contains(f'{keywords[keyword_count]}')]
+
+            product_num = keyword_review['상품_num']
+            top3_cumc_product = product_num.value_counts().sort_values(ascending=False)[:3].index
+
+            review1 = keyword_review_data[keyword_review_data['상품_num']==f'{top3_cumc_product[0]}'].sample(3)
+            review2 = keyword_review_data[keyword_review_data['상품_num']==f'{top3_cumc_product[1]}'].sample(3)
+            review3 = keyword_review_data[keyword_review_data['상품_num']==f'{top3_cumc_product[2]}'].sample(3)
+
+            img_link = []
+            for num in product_num:
+                link = link_csv[link_csv['상품']==num]
+                img_link.append(link['사진'])
+
+            # Load the image from the URL
+            for i in range(len(img_link)):
+                URL = f'https:{img_link}'
+                response = requests.get(URL)
+                image = Image.open(BytesIO(response.content))
+
+                st.image(image, caption='Image from URL')
+                st.text(f'review{i}')
+        
+
+try :
+    pos_keyword = word_rank(pos_noun_list)
+    neg_keyword = word_rank(neg_noun_list)
+
+    img_link = img_data_load(select_brand)
+    keyword_review(img_link, positive, pos_keyword)
+    keyword_review(img_link, positive, neg_keyword)
+except KeyError as k:
+    pass
+except NameError as n:
+    pass
+
