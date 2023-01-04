@@ -13,4 +13,3 @@ keybert
 bs4
 requests
 krwordrank
-PIL
