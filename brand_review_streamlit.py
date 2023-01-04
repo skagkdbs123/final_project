@@ -182,28 +182,26 @@ def graph(brand):
 
     # import matplotlib.pyplot as plt
 
-    plt.plot(word긍정, list긍정,
+    st.pyplot(word긍정, list긍정,
             marker='o', markerfacecolor='blue',
-            markersize=6)
+            markersize=6, title='긍정 키워드 비교')
 
-    plt.plot(word긍정, listbrand긍정,
+    st.pyplot(word긍정, listbrand긍정,
             color='skyblue',
             marker='o', markerfacecolor='red',
             markersize=6)
-    plt.title("긍정 키워드 비교")
-    plt.show()
+    st.imshow()
 
-    plt.plot(word부정, list부정,
+    st.pyplot(word부정, list부정,
          marker='o', markerfacecolor='blue',
-         markersize=6)
+         markersize=6, title='부정 키워드 비교')
 
-    plt.plot(word부정, listbrand부정,
+    st.pyplot(word부정, listbrand부정,
             color='skyblue',
             marker='o', markerfacecolor='red',
             markersize=6)
 
-    plt.title("부정 키워드 비교")
-    plt.show()
+    st.imshow()
   
 try : 
     data_load_state = st.text('Loading data...') 
