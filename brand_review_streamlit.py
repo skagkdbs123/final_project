@@ -18,9 +18,8 @@ from krwordrank.word import KRWordRank
 from kiwipiepy import Kiwi
 
 import requests
-from PIL import Image
 from bs4 import BeautifulSoup
-import cv2
+
 
 st.set_page_config(
     page_title="brand review analysis",
