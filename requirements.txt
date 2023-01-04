@@ -12,3 +12,4 @@ kiwipiepy
 keybert
 bs4
 requests
+cv2
