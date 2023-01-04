@@ -31,6 +31,23 @@ st.set_page_config(
 st.markdown("# 👕 브랜드를 선택해주세요. 👖")
 
 st.sidebar.markdown("# 브랜드 선택 ❓")
+st.sidebar.markdown("""
+라퍼지스토어 lafudgestore            
+꼼파뇨 compagno         
+드로우핏 Draw fit         
+인사일런스 insilence       
+커버낫 covernat         
+파르티멘토 partimento         
+필루미네이트 filluminate       
+와릿이즌 whatitisnt       
+수아레 suare        
+내셔널지오그래픽 nationalgeographic           
+예일 yale       
+디즈이스네버댓 thisisneverthat         
+아웃스탠딩 outstanding        
+리 lee      
+어반드레스 avan         
+""")
 
 # select brand
 brand_list = ['브랜드 선택', '라퍼지스토어', '꼼파뇨', '드로우핏', '인사일런스',
@@ -67,6 +84,7 @@ brand_link = {
     '어반드레스' : '1YmNK_XSR03fcKgnt6ZOmWkAusXteV8tT' 
 }
 
+@st.cache
 def data_load(select_brand):
     data_link = 'https://drive.google.com/uc?id='+brand_link[select_brand]
     data = pd.read_csv(data_link) 
@@ -105,18 +123,19 @@ def preprocessing(text):
 
 try :
     label_data = labeling(data=data)
-    positive = label_data[(label_data["평점"] == "100%")]
-    negative = label_data[(label_data["평점"] == "20%") | (label_data["평점"] == "40%")]
+    positive = label_data[(label_data["평점"] == "100%")].sample(10)
+    negative = label_data[(label_data["평점"] == "20%") | (label_data["평점"] == "40%")].sample(10)
     positive['리뷰'] = positive['리뷰'].map(preprocessing)
     negative['리뷰'] = negative['리뷰'].map(preprocessing)
     data_load_state.text(f'{select_brand[0]} 데이터 로드 success ‼')
+    st.write(positive['리뷰'])
 except KeyError as k:
     pass
 except NameError as n:
     pass
 
 # Kiwi 적용
-def kiwi(sentence):
+def noun_extractor(sentence):
     results = []
     result = Kiwi().analyze(sentence)
     for token, pos, _, _ in result[0][0]:
@@ -127,15 +146,20 @@ def kiwi(sentence):
 try :
     pos_noun_list = []
     neg_noun_list = []
+    print('긍정 리뷰 kiwi')
     for pos in positive['리뷰'].tolist():
-        pos_nouns = kiwi(pos)
+        pos_nouns = noun_extractor(pos)
         pos_text = ' '.join(pos_nouns)
         pos_noun_list.append(pos_text)
 
+    print('부정 리뷰 kiwi')
     for neg in negative['리뷰'].tolist():
-        neg_nouns = kiwi(neg)
+        neg_nouns = noun_extractor(neg)
         neg_text = ' '.join(neg_nouns)
         neg_noun_list.append(neg_text)
+
+    st.text(pos_noun_list)
+    st.text(neg_noun_list)
 
 except KeyError as k:
     pass
@@ -152,79 +176,104 @@ def word_rank(corpus):
     
     for fname in fnames:
         texts = fname
-        wordrank_extractor = KRWordRank(min_count=5, max_length=10, verbose=False)
+        wordrank_extractor = KRWordRank(min_count=1, max_length=10, verbose=False)
         keywords, rank, graph = wordrank_extractor.extract(texts, beta, max_iter)
         top_keywords.append(sorted(keywords.items(),key=lambda x:x[1],reverse=True)[:100])
         
-    for i in range(10):
+    for i in range(len(top_keywords)):
         if i<10:
             top_10.append(top_keywords[0][i][0])
             i += 1
     return top_10
 
-# img data load
-img_brand_link = {
-    '라퍼지스토어_img' : '1QfwKjzDAfoowpe4LiH9yxhChdZo3iizh',
-    '드로우핏_img' : '1-caqKnBlM4Q26tec_4aWFm9017F9-_E4',
-    '커버낫_img' : '1f50QDJI6K7KeZ7WGSANV1sH6aiXa2c5T',
-    '파르티멘토_img' : '1Nt0LAAWlvVTh60Y9Zvbb3jmw0Jdl-URg',
-    '필루미네이트_img' : '1CtYGt4E5hzqp-tvwix5WhANpvzds8TQK',
-    '꼼파뇨_img' : '1-CJcWAp3WxKymk7PUxj9NYgM-3zfjM83',
-    '인사일런스_img' : '1COUpes3WPXeGn6mdYrtzG1D9dMJ43SF7' ,
-    '와릿이즌_img' : '1nxOa5_69KQrmbMduDhQtAPFgiclIFXO_' ,
-    '수아레_img' : '1G5QtrNYtKNhFgRVx0Fj2-b0F626o7ccX',
-    '내셔널지오그래픽_img' : '1Wm2ox9koFbYXkMtvLApCfQjDnPfSRsGF',
-    '예일_img' : '1MxqLCSCptl5O5shldxK513mh4G7z3j3V',    
-    '디즈이스네버댓_img' : '17yuM4U3W3aKKMCQphvBePiHC5mVugVkf',    
-    '아웃스탠딩_img' : '17v-GwoTF0mgOkRta3hAhytWLPOh2YUpk',
-    '리_img' : '1us6tb40vHoz4hrNGfoD9n2BL0fciY97n',
-    '어반드레스_img' : '1LDAyqzM-TZZCLVrZJK08WLJe2IF6Jtxt' 
-}
-
-def img_data_load(select_brand):
-    img_data_link = 'https://drive.google.com/uc?id='+img_brand_link[select_brand]
-    img_data = pd.read_csv(img_data_link) 
-    return img_data    
-
-
-def keyword_review(link_csv, data, keywords):
-    img_csv = pd.read_csv('https://drive.google.com/uc?id='+brand_link[select_brand])
-
-    for keyword_count in range(len(keywords)):
-        if st.button(keywords[keyword_count]):
-            keyword_review_data = data[data['리뷰'].str.contains(f'{keywords[keyword_count]}')]
-
-            product_num = keyword_review['상품_num']
-            top3_cumc_product = product_num.value_counts().sort_values(ascending=False)[:3].index
-
-            review1 = keyword_review_data[keyword_review_data['상품_num']==f'{top3_cumc_product[0]}'].sample(3)
-            review2 = keyword_review_data[keyword_review_data['상품_num']==f'{top3_cumc_product[1]}'].sample(3)
-            review3 = keyword_review_data[keyword_review_data['상품_num']==f'{top3_cumc_product[2]}'].sample(3)
-
-            img_link = []
-            for num in product_num:
-                link = link_csv[link_csv['상품']==num]
-                img_link.append(link['사진'])
-
-            # Load the image from the URL
-            for i in range(len(img_link)):
-                URL = f'https:{img_link}'
-                response = requests.get(URL)
-                image = Image.open(BytesIO(response.content))
-
-                st.image(image, caption='Image from URL')
-                st.text(f'review{i}')
-        
-
 try :
     pos_keyword = word_rank(pos_noun_list)
     neg_keyword = word_rank(neg_noun_list)
-
-    img_link = img_data_load(select_brand)
-    keyword_review(img_link, positive, pos_keyword)
-    keyword_review(img_link, positive, neg_keyword)
+    st.text(pos_keyword)
+    st.text(neg_keyword)
 except KeyError as k:
     pass
 except NameError as n:
     pass
+except ValueError as v:
+    pass
 
+# img data load
+img_brand_link = {
+    '라퍼지스토어' : '1QfwKjzDAfoowpe4LiH9yxhChdZo3iizh',
+    '드로우핏' : '1-caqKnBlM4Q26tec_4aWFm9017F9-_E4',
+    '커버낫' : '1f50QDJI6K7KeZ7WGSANV1sH6aiXa2c5T',
+    '파르티멘토' : '1Nt0LAAWlvVTh60Y9Zvbb3jmw0Jdl-URg',
+    '필루미네이트' : '1CtYGt4E5hzqp-tvwix5WhANpvzds8TQK',
+    '꼼파뇨' : '1-CJcWAp3WxKymk7PUxj9NYgM-3zfjM83',
+    '인사일런스' : '1COUpes3WPXeGn6mdYrtzG1D9dMJ43SF7' ,
+    '와릿이즌' : '1nxOa5_69KQrmbMduDhQtAPFgiclIFXO_' ,
+    '수아레' : '1G5QtrNYtKNhFgRVx0Fj2-b0F626o7ccX',
+    '내셔널지오그래픽' : '1Wm2ox9koFbYXkMtvLApCfQjDnPfSRsGF',
+    '예일' : '1MxqLCSCptl5O5shldxK513mh4G7z3j3V',    
+    '디즈이스네버댓' : '17yuM4U3W3aKKMCQphvBePiHC5mVugVkf',    
+    '아웃스탠딩' : '17v-GwoTF0mgOkRta3hAhytWLPOh2YUpk',
+    '리' : '1us6tb40vHoz4hrNGfoD9n2BL0fciY97n',
+    '어반드레스' : '1LDAyqzM-TZZCLVrZJK08WLJe2IF6Jtxt' 
+}
+
+def img_data_load(select_brand):
+    for brand in select_brand:
+        img_data_link = f'https://drive.google.com/uc?id='+img_brand_link[brand]
+        img_data = pd.read_csv(img_data_link) 
+    return img_data    
+
+
+def keyword_review(link_csv, df, keywords):
+    # 각 키워드 for문으로 돌리기
+    for key_count in range(len(keywords)):
+        print(keyword[key_count])
+        # 키워드의 단어를 포함하는 리뷰를 keyword_review_data로 할당
+    #     keyword_review_data = df[df['리뷰'].str.contains(keywords[key_count])]
+
+    #     # 그 할당한 변수에서 상품 번호를 가져오고, 가장 많이 차지하는 top3의 상품 번호를 가져오기
+    #     product_num = keyword_review_data['상품_num']
+    #     top3_cumc_product = product_num.value_counts().sort_values(ascending=False)[:3].index
+
+    #     # top3의 상품 번호에 해당하는 리뷰 각각 3개의 리뷰 가져오기
+    #     review1 = keyword_review_data[keyword_review_data['상품_num']==top3_cumc_product[0]]['리뷰'].sample(3)
+    #     review2 = keyword_review_data[keyword_review_data['상품_num']==top3_cumc_product[1]]['리뷰'].sample(3)
+    #     review3 = keyword_review_data[keyword_review_data['상품_num']==top3_cumc_product[2]]['리뷰'].sample(3)
+
+
+    # if st.button(keywords[key_count]):
+    #     con = st.container()
+    #     return con.write(review1)
+
+
+    #for key_count in range(len(keywords)):
+            # img_link = []
+            # for num in product_num:
+            #     link = link_csv[link_csv['상품']==num]
+            #     img_link.append(link['사진'])
+
+            # # Load the image from the URL
+            # for i in range(len(img_link)):
+            #     URL = f'https:{img_link}'
+            #     response = requests.get(URL)
+            #     image = Image.open(BytesIO(response.content))
+
+            #     st.image(image, caption='Image from URL')
+            #     st.text(f'review{i}')
+        
+
+try :
+    img_link = img_data_load(select_brand)
+    st.table(positive)
+    pos = keyword_review(img_link, positive, pos_keyword)
+    st.text(pos)
+    neg = keyword_review(img_link, negative, neg_keyword)
+    st.text(neg)
+    st.markdown("""### '긍정 리뷰 키워드'""")
+    st.write(pos_keyword)
+    st.markdown("""### '부정 리뷰 키워드'""")
+    st.write(neg_keyword)
+except KeyError as k:
+    pass
+except NameError as n:
+    pass
