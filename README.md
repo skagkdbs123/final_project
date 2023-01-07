@@ -12,5 +12,5 @@
 
 예상 시안
 
-![예상시안1](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/1f2787d6-314f-4051-ad32-b6f66c46047f/예상시안1.png)
-![예상시안2](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/6b20e5fe-507f-4427-b861-5697fb9f331b/예상시안2.png)
+![예상시안1](/예상시안1.png)
+![예상시안2](/예상시안2.png)
