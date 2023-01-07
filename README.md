@@ -11,8 +11,8 @@
 
 ## 예상 시안
 
-![예상시안1](/img_folder/예상시안1.png)
-![예상시안2](/img_folder/예상시안2.png)
+![예상시안1](/img_folder/결과물예상도1.png)
+![예상시안2](/img_folder/결과물예상도2.png)
 
 실제 결과물
 ![결과물1](/img_folder/결과물1.png)
