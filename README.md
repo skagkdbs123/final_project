@@ -19,8 +19,8 @@
 ![결과물3](/결과물3.png)
 
 
-##키워드 추출에 사용한 라이브러리
+## 키워드 추출에 사용한 라이브러리
 
-1.keybert(Tokenizer를 통한 키워드 추출)
-2.okt,kiwi(명사만 따로 자르기 위한 형태소 분석기)
-3.Krwordrank(Tokenizer를 사용하지 않는 키워드 추출)
+1. keybert(Tokenizer를 통한 키워드 추출)
+2. okt,kiwi(명사만 따로 자르기 위한 형태소 분석기)
+3. Krwordrank(Tokenizer를 사용하지 않는 키워드 추출)
